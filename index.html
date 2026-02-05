@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>For My Favorite Person</title>
     <style>
         body {
@@ -10,20 +10,24 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #fff0f3;
             overflow: hidden;
             text-align: center;
+            box-sizing: border-box;
         }
 
         .container {
             z-index: 10;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
         }
 
         .couple-photo {
@@ -43,7 +47,8 @@
             justify-content: center;
             align-items: center;
             gap: 20px;
-            height: 150px;
+            height: 100px;
+            position: relative; /* Context for absolute positioning */
         }
 
         button {
@@ -53,22 +58,25 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease;
         }
 
         #yesBtn {
             background-color: #ff4d6d;
             color: white;
             box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            z-index: 2;
         }
 
         #noBtn {
             background-color: #808080;
             color: white;
-            position: absolute;
+            z-index: 1;
+            white-space: nowrap;
+            /* Start relative so it sits next to Yes on load */
+            position: relative; 
         }
 
-        /* Floating Hearts Animation */
         .heart {
             position: absolute;
             color: #ff4d6d;
@@ -76,19 +84,25 @@
             top: -10%;
             user-select: none;
             animation: float 5s linear infinite;
+            z-index: 0;
         }
 
         @keyframes float {
             0% { transform: translateY(0vh) rotate(0deg); opacity: 1; }
             100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.5rem; }
+            .couple-photo { width: 120px; height: 120px; }
+            button { padding: 12px 24px; font-size: 1rem; }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="us.jpeg"
-         alt="Us" class="couple-photo">
+        <img src="us.jpeg" alt="Us" class="couple-photo">
         <h1>Will you be my Valentine? ❤️</h1>
         <p>Think carefully... I'm very sensitive! 🥺</p>
 
@@ -99,24 +113,27 @@
     </div>
 
     <script>
-        let yesSize = 1.2;
+        let yesSize = 1;
         let clickCount = 0;
 
         function moveButton() {
             const btn = document.getElementById('noBtn');
             const yesBtn = document.getElementById('yesBtn');
             
-            // Move No Button
-            const x = Math.random() * (window.innerWidth - btn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - btn.offsetHeight);
+            // Switch to fixed position ONLY once she interacts with it
+            btn.style.position = 'fixed';
+            
+            // Randomly jump within the screen boundaries
+            const x = Math.random() * (window.innerWidth - btn.offsetWidth - 40) + 20;
+            const y = Math.random() * (window.innerHeight - btn.offsetHeight - 40) + 20;
+            
             btn.style.left = x + 'px';
             btn.style.top = y + 'px';
 
-            // Make Yes Button Bigger!
+            // Make Yes Button Bigger
             yesSize += 0.2;
             yesBtn.style.transform = `scale(${yesSize})`;
             
-            // Add extra text to Yes button as it grows
             const phrases = ["Are you sure?", "Really?", "Don't do this...", "Please?", "I'm gonna cry!"];
             if (clickCount < phrases.length) {
                 btn.innerText = phrases[clickCount];
@@ -129,18 +146,18 @@
             heart.classList.add('heart');
             heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 5000);
         }
 
-        setInterval(createHeart, 300);
+        setInterval(createHeart, 400);
 
         function celebrate() {
             document.querySelector('.container').innerHTML = `
                 <img src="https://gifdb.com/images/high/cartoon-bears-cute-kiss-3ij4wstjpzjdzo9k.gif"
-                width="200">
-                <h1>I KNEW IT! Yay! 💖</h1>
+                style="width: 100%; max-width: 250px; border-radius: 10px;">
+                <h1 style="margin-top: 20px;">I KNEW IT! Yay! 💖</h1>
                 <p>Best Valentine's ever. I love you!</p>
             `;
             document.body.style.backgroundColor = "#ffb3c1";
